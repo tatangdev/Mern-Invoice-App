@@ -1,18 +1,19 @@
 ### Variables
 @baseUrl = http://localhost:3000
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxIiwiZW1haWwiOiJ1c2VyQGV4YW1wbGUuY29tIiwiaWF0IjoxNzU5MTY2MjgyLCJleHAiOjE3NTk3NzEwODJ9.MXQDlkVYTVzntY_7vYzNMTp5E7BsjS2JLMQ2AwqmGqA
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGRlYzQ1MzBmMDYzZDFjYTkwNDQyNTUiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NTk0Mjk5MjQsImV4cCI6MTc2MDAzNDcyNH0.x2uxXhWSJd_MePkqNCAidRC-qqzo8lvwywS1obQFeV8
 
 ### Health Check
 GET {{baseUrl}}
 
 ### Register User
+# @name register
 POST {{baseUrl}}/api/auth/register
 Content-Type: application/json
 
 {
-  "email": "test@example.com",
-  "password": "test123",
-  "name": "Test User"
+  "email": "max@example.com",
+  "password": "strongPassword123",
+  "fullName": "Max Amini"
 }
 
 ### Login
@@ -21,10 +22,10 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "user@example.com",
-  "password": "password123"
+  "email": "max@example.com",
+  "password": "strongPassword123"
 }
 
 ### Get Current User
 GET {{baseUrl}}/api/auth/me
-Authorization: Bearer {{token}}
+Authorization: Bearer {{login.response.body.data.token}}

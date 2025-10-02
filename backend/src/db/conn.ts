@@ -4,7 +4,6 @@ import logger from '../config/logger.js';
 
 mongoose.set('strictQuery', false);
 
-// event listeners
 mongoose.connection.on('connected', () => {
   logger.info('MongoDB connected successfully');
 });
@@ -17,7 +16,6 @@ mongoose.connection.on('disconnected', () => {
   logger.warn('MongoDB disconnected');
 });
 
-// Graceful shutdown
 process.on('SIGINT', async () => {
   try {
     await mongoose.connection.close();

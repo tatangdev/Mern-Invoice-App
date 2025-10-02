@@ -49,7 +49,6 @@ app.use((err: Error, _req: Request, res: Response, _next: unknown) => {
 
 async function startServer(): Promise<void> {
   try {
-    // Try connect to db befor starting
     await connectDatabase();
 
     app.listen(port, () => {

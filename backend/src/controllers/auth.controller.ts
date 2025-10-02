@@ -1,15 +1,9 @@
 import { type Request, type Response } from 'express';
+import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
 import { generateToken, validateToken } from '../utils/jwt.js';
 import logger from '../config/logger.js';
-
-const mockUsers = [
-  {
-    id: '1',
-    email: 'user@example.com',
-    password: 'password123',
-    name: 'Test User',
-  },
-];
+import User from '../db/models/User.js';
 
 export async function login(req: Request, res: Response): Promise<void> {
   try {
@@ -22,9 +16,18 @@ export async function login(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const user = mockUsers.find((u) => u.email === email);
+    const user = await User.findOne({ email }).select('+password');
 
-    if (!user || user.password !== password) {
+    if (!user) {
+      res.status(401).json({
+        message: 'Invalid credentials',
+      });
+      return;
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordValid) {
       res.status(401).json({
         message: 'Invalid credentials',
       });
@@ -32,19 +35,19 @@ export async function login(req: Request, res: Response): Promise<void> {
     }
 
     const token = generateToken({
-      userId: user.id,
+      userId: (user._id as mongoose.Types.ObjectId).toString(),
       email: user.email,
     });
 
-    logger.info('User logged in', { userId: user.id, email: user.email });
+    logger.info('User logged in', { userId: user._id, email: user.email });
 
     res.status(200).json({
       data: {
         token,
         user: {
-          id: user.id,
+          id: user._id,
           email: user.email,
-          name: user.name,
+          fullName: user.fullName,
         },
       },
     });
@@ -59,16 +62,16 @@ export async function login(req: Request, res: Response): Promise<void> {
 
 export async function register(req: Request, res: Response): Promise<void> {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, fullName } = req.body;
 
-    if (!email || !password || !name) {
+    if (!email || !password || !fullName) {
       res.status(400).json({
-        message: 'Email, password, and name are required',
+        message: 'Email, password, and full name are required',
       });
       return;
     }
 
-    const existingUser = mockUsers.find((u) => u.email === email);
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       res.status(409).json({
@@ -77,22 +80,21 @@ export async function register(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const newUser = {
-      id: String(mockUsers.length + 1),
-      email,
-      password,
-      name,
-    };
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    mockUsers.push(newUser);
+    const newUser = await User.create({
+      email,
+      password: hashedPassword,
+      fullName,
+    });
 
     const token = generateToken({
-      userId: newUser.id,
+      userId: (newUser._id as mongoose.Types.ObjectId).toString(),
       email: newUser.email,
     });
 
     logger.info('User registered', {
-      userId: newUser.id,
+      userId: newUser._id,
       email: newUser.email,
     });
 
@@ -100,9 +102,9 @@ export async function register(req: Request, res: Response): Promise<void> {
       data: {
         token,
         user: {
-          id: newUser.id,
+          id: newUser._id,
           email: newUser.email,
-          name: newUser.name,
+          fullName: newUser.fullName,
         },
       },
     });
@@ -131,7 +133,7 @@ export async function getCurrentUser(
 
     const token = authHeader.substring(7);
     const decoded = validateToken(token);
-    const user = mockUsers.find((u) => u.id === decoded.userId);
+    const user = await User.findById(decoded.userId);
 
     if (!user) {
       res.status(404).json({
@@ -143,9 +145,9 @@ export async function getCurrentUser(
     res.status(200).json({
       data: {
         user: {
-          id: user.id,
+          id: user._id,
           email: user.email,
-          name: user.name,
+          fullName: user.fullName,
         },
       },
     });
