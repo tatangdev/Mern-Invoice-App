@@ -6,6 +6,7 @@ import SidebarLayout from 'src/layouts/SidebarLayout';
 import BaseLayout from 'src/layouts/BaseLayout';
 
 import SuspenseLoader from 'src/components/SuspenseLoader';
+import ProtectedRoute from 'src/components/ProtectedRoute';
 
 const Loader = (Component) => (props) =>
   (
@@ -13,6 +14,11 @@ const Loader = (Component) => (props) =>
       <Component {...props} />
     </Suspense>
   );
+
+// Auth Pages
+
+const Login = Loader(lazy(() => import('src/content/pages/Auth/Login')));
+const Register = Loader(lazy(() => import('src/content/pages/Auth/Register')));
 
 // Pages
 
@@ -35,6 +41,9 @@ const UserProfile = Loader(
 );
 const UserSettings = Loader(
   lazy(() => import('src/content/applications/Users/settings'))
+);
+const Products = Loader(
+  lazy(() => import('src/content/applications/Products'))
 );
 
 // Components
@@ -78,16 +87,24 @@ const StatusMaintenance = Loader(
 
 const routes: RouteObject[] = [
   {
+    path: 'login',
+    element: <Login />
+  },
+  {
+    path: 'register',
+    element: <Register />
+  },
+  {
     path: '',
     element: <BaseLayout />,
     children: [
       {
         path: '/',
-        element: <Overview />
+        element: <Navigate to="/login" replace />
       },
       {
         path: 'overview',
-        element: <Navigate to="/" replace />
+        element: <Navigate to="/login" replace />
       },
       {
         path: 'status',
@@ -122,7 +139,11 @@ const routes: RouteObject[] = [
   },
   {
     path: 'dashboards',
-    element: <SidebarLayout />,
+    element: (
+      <ProtectedRoute>
+        <SidebarLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '',
@@ -140,7 +161,11 @@ const routes: RouteObject[] = [
   },
   {
     path: 'management',
-    element: <SidebarLayout />,
+    element: (
+      <ProtectedRoute>
+        <SidebarLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '',
@@ -149,6 +174,10 @@ const routes: RouteObject[] = [
       {
         path: 'transactions',
         element: <Transactions />
+      },
+      {
+        path: 'products',
+        element: <Products />
       },
       {
         path: 'profile',
@@ -171,7 +200,11 @@ const routes: RouteObject[] = [
   },
   {
     path: '/components',
-    element: <SidebarLayout />,
+    element: (
+      <ProtectedRoute>
+        <SidebarLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: '',
