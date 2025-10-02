@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import { config } from './config/env.js';
 import logger from './config/logger.js';
 import routes from './routes/index.routes.js';
+import { connectDatabase } from './db/conn.js';
 
 const app: Express = express();
 const port = config.port;
@@ -46,6 +47,18 @@ app.use((err: Error, _req: Request, res: Response, _next: unknown) => {
   });
 });
 
-app.listen(port, () => {
-  logger.info(`Server running on port ${port}`);
-});
+async function startServer(): Promise<void> {
+  try {
+    // Try connect to db befor starting
+    await connectDatabase();
+
+    app.listen(port, () => {
+      logger.info(`Server running on port ${port}`);
+    });
+  } catch (error) {
+    logger.error('Failed to start server', { error });
+    process.exit(1);
+  }
+}
+
+startServer();
