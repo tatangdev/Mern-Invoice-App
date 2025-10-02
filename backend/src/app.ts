@@ -27,7 +27,7 @@ app.use(
 app.use(express.json());
 
 app.get('/', (_req: Request, res: Response) => {
-  res.send('Hello World!');
+  res.json({ message: 'Hello World!' });
 });
 
 app.use('/api', routes);

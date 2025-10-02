@@ -1,7 +1,7 @@
 import { type Request, type Response } from 'express';
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
-import { generateToken, validateToken } from '../utils/jwt.js';
+import { generateToken } from '../utils/jwt.js';
 import logger from '../config/logger.js';
 import User from '../db/models/User.js';
 
@@ -122,18 +122,7 @@ export async function getCurrentUser(
   res: Response,
 ): Promise<void> {
   try {
-    const authHeader = req.headers.authorization;
-
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      res.status(401).json({
-        message: 'No token provided',
-      });
-      return;
-    }
-
-    const token = authHeader.substring(7);
-    const decoded = validateToken(token);
-    const user = await User.findById(decoded.userId);
+    const user = await User.findById(req.user?.userId);
 
     if (!user) {
       res.status(404).json({
@@ -153,8 +142,8 @@ export async function getCurrentUser(
     });
   } catch (error) {
     logger.error('Get current user error', { error });
-    res.status(401).json({
-      message: error instanceof Error ? error.message : 'Authentication failed',
+    res.status(500).json({
+      message: 'Failed to get current user',
     });
   }
 }

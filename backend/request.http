@@ -1,6 +1,7 @@
 ### Variables
 @baseUrl = http://localhost:3000
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OGRlYzQ1MzBmMDYzZDFjYTkwNDQyNTUiLCJlbWFpbCI6InRlc3RAZXhhbXBsZS5jb20iLCJpYXQiOjE3NTk0Mjk5MjQsImV4cCI6MTc2MDAzNDcyNH0.x2uxXhWSJd_MePkqNCAidRC-qqzo8lvwywS1obQFeV8
+@productId = 68dec5485a5eae44c8e12f47
 
 ### Health Check
 GET {{baseUrl}}
@@ -28,4 +29,39 @@ Content-Type: application/json
 
 ### Get Current User
 GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Get All Products
+GET {{baseUrl}}/api/products
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Get Product by ID
+GET {{baseUrl}}/api/products/{{productId}}
+Authorization: Bearer {{login.response.body.data.token}}
+
+### Create Product
+# @name createProduct
+POST {{baseUrl}}/api/products
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+  "name": "Website Design",
+  "desc": "Custom website design with responsive layout",
+  "price": 1500
+}
+
+### Update Product
+PUT {{baseUrl}}/api/products/{{productId}}
+Authorization: Bearer {{login.response.body.data.token}}
+Content-Type: application/json
+
+{
+  "name": "Premium Website Design",
+  "desc": "Premium custom website design with responsive layout and animations",
+  "price": 2500
+}
+
+### Delete Product
+DELETE {{baseUrl}}/api/products/{{productId}}
 Authorization: Bearer {{login.response.body.data.token}}
