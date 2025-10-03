@@ -20,19 +20,16 @@ A full-stack invoice management application built with MongoDB, Express, React, 
 **Frontend:** React, TypeScript, Material-UI, Vitest
 **Backend:** Node.js, Express, TypeScript, MongoDB, JWT, Multer, Vitest
 
-## Quick Start
+> Frontend UI based on [Tokyo Free White React Admin Dashboard](https://github.com/bloomui/tokyo-free-white-react-admin-dashboard) template
 
-### Prerequisites
-- Node.js v18+
-- pnpm
-- MongoDB
+## Quick Start
 
 ### Installation
 
 ```bash
 # Clone repository
 git clone https://github.com/tatangdev/Mern-Invoice-App
-cd the-pack
+cd Mern-Invoice-App
 
 # Backend setup
 cd backend
