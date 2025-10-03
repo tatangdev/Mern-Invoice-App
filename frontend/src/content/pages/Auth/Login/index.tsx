@@ -38,7 +38,7 @@ function Login() {
         JSON.stringify(response.data.user)
       );
 
-      navigate(ROUTES.DASHBOARD);
+      navigate(ROUTES.PRODUCTS);
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {

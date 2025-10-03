@@ -16,7 +16,7 @@ function DashboardRedirect() {
     return <SuspenseLoader />;
   }
 
-  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
+  return <Navigate to={isAuthenticated ? '/management/products' : '/login'} replace />;
 }
 
 const Loader = (Component) => (props) =>
@@ -28,10 +28,6 @@ const Loader = (Component) => (props) =>
 
 const Login = Loader(lazy(() => import('src/content/pages/Auth/Login')));
 const Register = Loader(lazy(() => import('src/content/pages/Auth/Register')));
-
-const Dashboard = Loader(
-  lazy(() => import('src/content/applications/Dashboard'))
-);
 
 const Products = Loader(
   lazy(() => import('src/content/applications/Products'))
@@ -94,20 +90,6 @@ const routes: RouteObject[] = [
     ]
   },
   {
-    path: 'dashboard',
-    element: (
-      <ProtectedRoute>
-        <SidebarLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      {
-        path: '',
-        element: <Dashboard />
-      }
-    ]
-  },
-  {
     path: 'management',
     element: (
       <ProtectedRoute>
@@ -117,7 +99,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '',
-        element: <Navigate to="invoices" replace />
+        element: <Navigate to="products" replace />
       },
       {
         path: 'products',

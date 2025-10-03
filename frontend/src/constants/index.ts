@@ -2,10 +2,8 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   REGISTER: '/register',
-  DASHBOARD: '/dashboard',
   PRODUCTS: '/management/products',
   INVOICES: '/management/invoices',
-  TRANSACTIONS: '/management/transactions',
   PROFILE: '/management/profile'
 };
 
@@ -21,6 +19,5 @@ export const API_ENDPOINTS = {
     ME: '/api/auth/me'
   },
   PRODUCTS: '/api/products',
-  INVOICES: '/api/invoices',
-  TRANSACTIONS: '/api/transactions'
+  INVOICES: '/api/invoices'
 };

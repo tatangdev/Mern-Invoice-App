@@ -39,7 +39,7 @@ function Register() {
         JSON.stringify(response.data.user)
       );
 
-      navigate(ROUTES.DASHBOARD);
+      navigate(ROUTES.PRODUCTS);
     } catch (err) {
       setError(err.message || 'Registration failed');
     } finally {

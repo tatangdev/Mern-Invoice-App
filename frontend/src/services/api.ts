@@ -148,9 +148,3 @@ export const invoicesApi = {
     });
   }
 };
-
-export const transactionsApi = {
-  getAll() {
-    return fetchApi('/api/transactions', {});
-  }
-};
