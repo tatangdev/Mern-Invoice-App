@@ -47,7 +47,6 @@ const InvoiceForm: FC<InvoiceFormProps> = ({
 
   useEffect(() => {
     if (invoice) {
-      // Transform invoice items from backend format to form format
       const transformedItems = invoice.items.map((item: any) => ({
         productId: item.product || item.productId || '',
         qty: item.qty
@@ -196,9 +195,15 @@ const InvoiceForm: FC<InvoiceFormProps> = ({
                       <Autocomplete
                         options={products}
                         getOptionLabel={(option: Product) => option.name}
-                        value={products.find((p) => p.id === item.productId) || null}
+                        value={
+                          products.find((p) => p.id === item.productId) || null
+                        }
                         onChange={(_, newValue: Product | null) => {
-                          handleItemChange(index, 'productId', newValue?.id || '');
+                          handleItemChange(
+                            index,
+                            'productId',
+                            newValue?.id || ''
+                          );
                         }}
                         renderInput={(params) => (
                           <TextField {...params} label="Product" required />

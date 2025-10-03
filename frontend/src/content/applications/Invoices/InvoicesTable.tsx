@@ -103,7 +103,9 @@ const InvoicesTable: FC<InvoicesTableProps> = ({
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="text.secondary">
-                      {invoice.issueDate ? format(new Date(invoice.issueDate), 'MMM dd, yyyy') : 'N/A'}
+                      {invoice.issueDate
+                        ? format(new Date(invoice.issueDate), 'MMM dd, yyyy')
+                        : 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">

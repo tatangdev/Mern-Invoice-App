@@ -1,5 +1,5 @@
 import { Helmet } from 'react-helmet-async';
-import { useState, FormEvent, useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import {
   Box,
@@ -11,58 +11,41 @@ import {
   Link,
   Alert
 } from '@mui/material';
+import { authApi } from 'src/services/api';
+import { ROUTES, STORAGE_KEYS } from 'src/constants';
 
 function Register() {
   const navigate = useNavigate();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+
   const [error, setError] = useState('');
+
   const [loading, setLoading] = useState(false);
-  const isMounted = useRef(true);
 
-  useEffect(() => {
-    return () => {
-      isMounted.current = false;
-    };
-  }, []);
-
-  const handleSubmit = async (e: FormEvent) => {
+  async function handleSubmit(e) {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/auth/register`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password, fullName })
-        }
+      const response = await authApi.register(email, password, fullName);
+
+      localStorage.setItem(STORAGE_KEYS.TOKEN, response.data.token);
+      localStorage.setItem(
+        STORAGE_KEYS.USER,
+        JSON.stringify(response.data.user)
       );
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-
-      localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user', JSON.stringify(data.data.user));
-      navigate('/dashboards/crypto');
+      navigate(ROUTES.DASHBOARD);
     } catch (err) {
-      if (isMounted.current) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      }
+      setError(err.message || 'Registration failed');
     } finally {
-      if (isMounted.current) {
-        setLoading(false);
-      }
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <>
@@ -138,7 +121,7 @@ function Register() {
             <Box sx={{ mt: 2, textAlign: 'center' }}>
               <Typography variant="body2">
                 Already have an account?{' '}
-                <Link component={RouterLink} to="/login">
+                <Link component={RouterLink} to={ROUTES.LOGIN}>
                   Sign in
                 </Link>
               </Typography>

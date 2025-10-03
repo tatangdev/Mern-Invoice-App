@@ -25,7 +25,11 @@ interface InvoicePreviewProps {
   invoice: Invoice | null;
 }
 
-const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => {
+const InvoicePreview: FC<InvoicePreviewProps> = ({
+  open,
+  onClose,
+  invoice
+}) => {
   const printRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
@@ -141,7 +145,11 @@ const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => 
             <Typography variant="h3" className="invoice-title">
               INVOICE
             </Typography>
-            <Typography variant="h6" className="invoice-number" color="text.secondary">
+            <Typography
+              variant="h6"
+              className="invoice-number"
+              color="text.secondary"
+            >
               #{invoice.number}
             </Typography>
             <Box sx={{ mt: 1 }}>
@@ -154,7 +162,11 @@ const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => 
           <Grid container spacing={4} sx={{ mb: 4 }}>
             <Grid item xs={6}>
               <Box className="section">
-                <Typography variant="subtitle2" className="section-title" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  className="section-title"
+                  color="text.secondary"
+                >
                   BILL TO
                 </Typography>
                 <Typography variant="body1" sx={{ fontWeight: 500 }}>
@@ -164,7 +176,11 @@ const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => 
             </Grid>
             <Grid item xs={6}>
               <Box className="section">
-                <Typography variant="subtitle2" className="section-title" color="text.secondary">
+                <Typography
+                  variant="subtitle2"
+                  className="section-title"
+                  color="text.secondary"
+                >
                   DATE
                 </Typography>
                 <Typography variant="body2">
@@ -182,10 +198,18 @@ const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => 
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Item</strong></TableCell>
-                <TableCell align="right"><strong>Price</strong></TableCell>
-                <TableCell align="right"><strong>Qty</strong></TableCell>
-                <TableCell align="right"><strong>Total</strong></TableCell>
+                <TableCell>
+                  <strong>Item</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Price</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Qty</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Total</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -215,33 +239,65 @@ const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => 
 
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
             <Box sx={{ width: 300 }}>
-              <Box className="summary-row" sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+              <Box
+                className="summary-row"
+                sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}
+              >
                 <Typography>Subtotal:</Typography>
-                <Typography>Rp {(invoice.subtotal || 0).toLocaleString('id-ID')}</Typography>
+                <Typography>
+                  Rp {(invoice.subtotal || 0).toLocaleString('id-ID')}
+                </Typography>
               </Box>
               {invoice.tax !== undefined && invoice.tax > 0 && (
-                <Box className="summary-row" sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+                <Box
+                  className="summary-row"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    py: 1
+                  }}
+                >
                   <Typography>Tax:</Typography>
-                  <Typography>Rp {invoice.tax.toLocaleString('id-ID')}</Typography>
+                  <Typography>
+                    Rp {invoice.tax.toLocaleString('id-ID')}
+                  </Typography>
                 </Box>
               )}
               {invoice.discount !== undefined && invoice.discount > 0 && (
-                <Box className="summary-row" sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+                <Box
+                  className="summary-row"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    py: 1
+                  }}
+                >
                   <Typography>Discount:</Typography>
-                  <Typography>- Rp {invoice.discount.toLocaleString('id-ID')}</Typography>
+                  <Typography>
+                    - Rp {invoice.discount.toLocaleString('id-ID')}
+                  </Typography>
                 </Box>
               )}
               <Divider sx={{ my: 1 }} />
-              <Box className="summary-row summary-total" sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
+              <Box
+                className="summary-row summary-total"
+                sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}
+              >
                 <Typography variant="h6">Total:</Typography>
-                <Typography variant="h6">Rp {(invoice.total || 0).toLocaleString('id-ID')}</Typography>
+                <Typography variant="h6">
+                  Rp {(invoice.total || 0).toLocaleString('id-ID')}
+                </Typography>
               </Box>
             </Box>
           </Box>
 
           {invoice.notes && (
             <Box sx={{ mt: 4 }}>
-              <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+              <Typography
+                variant="subtitle2"
+                color="text.secondary"
+                gutterBottom
+              >
                 NOTES
               </Typography>
               <Typography variant="body2">{invoice.notes}</Typography>
@@ -251,7 +307,11 @@ const InvoicePreview: FC<InvoicePreviewProps> = ({ open, onClose, invoice }) => 
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>Close</Button>
-        <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint}>
+        <Button
+          variant="contained"
+          startIcon={<PrintIcon />}
+          onClick={handlePrint}
+        >
           Print
         </Button>
       </DialogActions>

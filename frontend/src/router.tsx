@@ -7,6 +7,7 @@ import BaseLayout from 'src/layouts/BaseLayout';
 
 import SuspenseLoader from 'src/components/SuspenseLoader';
 import ProtectedRoute from 'src/components/ProtectedRoute';
+import DashboardRedirect from 'src/content/applications/Dashboard';
 
 const Loader = (Component) => (props) =>
   (
@@ -15,33 +16,13 @@ const Loader = (Component) => (props) =>
     </Suspense>
   );
 
-// Auth Pages
-
 const Login = Loader(lazy(() => import('src/content/pages/Auth/Login')));
 const Register = Loader(lazy(() => import('src/content/pages/Auth/Register')));
 
-// Pages
-
-const Overview = Loader(lazy(() => import('src/content/overview')));
-
-// Dashboards
-
-const Crypto = Loader(lazy(() => import('src/content/dashboards/Crypto')));
-
-// Applications
-
-const Messenger = Loader(
-  lazy(() => import('src/content/applications/Messenger'))
+const Dashboard = Loader(
+  lazy(() => import('src/content/applications/Dashboard'))
 );
-const Transactions = Loader(
-  lazy(() => import('src/content/applications/Transactions'))
-);
-const UserProfile = Loader(
-  lazy(() => import('src/content/applications/Users/profile'))
-);
-const UserSettings = Loader(
-  lazy(() => import('src/content/applications/Users/settings'))
-);
+
 const Products = Loader(
   lazy(() => import('src/content/applications/Products'))
 );
@@ -51,44 +32,15 @@ const ProductDetail = Loader(
 const Invoices = Loader(
   lazy(() => import('src/content/applications/Invoices'))
 );
-
-// Components
-
-const Buttons = Loader(
-  lazy(() => import('src/content/pages/Components/Buttons'))
+const UserProfile = Loader(
+  lazy(() => import('src/content/applications/Users'))
 );
-const Modals = Loader(
-  lazy(() => import('src/content/pages/Components/Modals'))
-);
-const Accordions = Loader(
-  lazy(() => import('src/content/pages/Components/Accordions'))
-);
-const Tabs = Loader(lazy(() => import('src/content/pages/Components/Tabs')));
-const Badges = Loader(
-  lazy(() => import('src/content/pages/Components/Badges'))
-);
-const Tooltips = Loader(
-  lazy(() => import('src/content/pages/Components/Tooltips'))
-);
-const Avatars = Loader(
-  lazy(() => import('src/content/pages/Components/Avatars'))
-);
-const Cards = Loader(lazy(() => import('src/content/pages/Components/Cards')));
-const Forms = Loader(lazy(() => import('src/content/pages/Components/Forms')));
-
-// Status
 
 const Status404 = Loader(
   lazy(() => import('src/content/pages/Status/Status404'))
 );
 const Status500 = Loader(
   lazy(() => import('src/content/pages/Status/Status500'))
-);
-const StatusComingSoon = Loader(
-  lazy(() => import('src/content/pages/Status/ComingSoon'))
-);
-const StatusMaintenance = Loader(
-  lazy(() => import('src/content/pages/Status/Maintenance'))
 );
 
 const routes: RouteObject[] = [
@@ -106,11 +58,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '/',
-        element: <Navigate to="/login" replace />
-      },
-      {
-        path: 'overview',
-        element: <Navigate to="/login" replace />
+        element: <DashboardRedirect />
       },
       {
         path: 'status',
@@ -126,14 +74,6 @@ const routes: RouteObject[] = [
           {
             path: '500',
             element: <Status500 />
-          },
-          {
-            path: 'maintenance',
-            element: <StatusMaintenance />
-          },
-          {
-            path: 'coming-soon',
-            element: <StatusComingSoon />
           }
         ]
       },
@@ -144,7 +84,7 @@ const routes: RouteObject[] = [
     ]
   },
   {
-    path: 'dashboards',
+    path: 'dashboard',
     element: (
       <ProtectedRoute>
         <SidebarLayout />
@@ -153,15 +93,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '',
-        element: <Navigate to="crypto" replace />
-      },
-      {
-        path: 'crypto',
-        element: <Crypto />
-      },
-      {
-        path: 'messenger',
-        element: <Messenger />
+        element: <Dashboard />
       }
     ]
   },
@@ -175,11 +107,7 @@ const routes: RouteObject[] = [
     children: [
       {
         path: '',
-        element: <Navigate to="transactions" replace />
-      },
-      {
-        path: 'transactions',
-        element: <Transactions />
+        element: <Navigate to="invoices" replace />
       },
       {
         path: 'products',
@@ -195,70 +123,7 @@ const routes: RouteObject[] = [
       },
       {
         path: 'profile',
-        children: [
-          {
-            path: '',
-            element: <Navigate to="details" replace />
-          },
-          {
-            path: 'details',
-            element: <UserProfile />
-          },
-          {
-            path: 'settings',
-            element: <UserSettings />
-          }
-        ]
-      }
-    ]
-  },
-  {
-    path: '/components',
-    element: (
-      <ProtectedRoute>
-        <SidebarLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      {
-        path: '',
-        element: <Navigate to="buttons" replace />
-      },
-      {
-        path: 'buttons',
-        element: <Buttons />
-      },
-      {
-        path: 'modals',
-        element: <Modals />
-      },
-      {
-        path: 'accordions',
-        element: <Accordions />
-      },
-      {
-        path: 'tabs',
-        element: <Tabs />
-      },
-      {
-        path: 'badges',
-        element: <Badges />
-      },
-      {
-        path: 'tooltips',
-        element: <Tooltips />
-      },
-      {
-        path: 'avatars',
-        element: <Avatars />
-      },
-      {
-        path: 'cards',
-        element: <Cards />
-      },
-      {
-        path: 'forms',
-        element: <Forms />
+        element: <UserProfile />
       }
     ]
   }

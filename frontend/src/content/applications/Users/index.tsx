@@ -1,5 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 import Footer from 'src/components/Footer';
+import { format } from 'date-fns';
 
 import { Grid, Container, Box } from '@mui/material';
 
@@ -10,14 +11,13 @@ function ManagementUserProfile() {
   const { user: authUser } = useAuth();
 
   const user = {
-    savedCards: 7,
     name: authUser?.fullName || 'User',
-    coverImg: '/static/images/placeholders/covers/5.jpg',
-    avatar: '/static/images/avatars/4.jpg',
-    description: 'Welcome to your profile page',
+    coverImg: '',
+    avatar: '',
     jobtitle: authUser?.email || '',
-    location: '',
-    followers: '0'
+    joinDate: authUser?.createdAt
+      ? format(new Date(authUser.createdAt), 'MMMM yyyy')
+      : null
   };
 
   return (

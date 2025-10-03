@@ -67,7 +67,10 @@ function ProductDetail() {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+      <Container
+        maxWidth="lg"
+        sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}
+      >
         <CircularProgress />
       </Container>
     );
@@ -129,7 +132,11 @@ function ProductDetail() {
                     boxShadow: 1
                   }}
                 >
-                  <Typography variant="h1" color="text.secondary" sx={{ opacity: 0.3 }}>
+                  <Typography
+                    variant="h1"
+                    color="text.secondary"
+                    sx={{ opacity: 0.3 }}
+                  >
                     {product.name.charAt(0).toUpperCase()}
                   </Typography>
                 </Box>
@@ -141,7 +148,12 @@ function ProductDetail() {
           <Grid item xs={12} md={6}>
             <Card>
               <CardContent sx={{ p: 4 }}>
-                <Chip label="In Stock" color="success" size="small" sx={{ mb: 2 }} />
+                <Chip
+                  label="In Stock"
+                  color="success"
+                  size="small"
+                  sx={{ mb: 2 }}
+                />
 
                 <Typography variant="h3" gutterBottom>
                   {product.name}
@@ -184,7 +196,9 @@ function ProductDetail() {
                         Added Date
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {new Date(product.createdAt).toLocaleDateString('id-ID')}
+                        {new Date(product.createdAt).toLocaleDateString(
+                          'id-ID'
+                        )}
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>
@@ -192,7 +206,9 @@ function ProductDetail() {
                         Last Updated
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {new Date(product.updatedAt).toLocaleDateString('id-ID')}
+                        {new Date(product.updatedAt).toLocaleDateString(
+                          'id-ID'
+                        )}
                       </Typography>
                     </Grid>
                   </Grid>
@@ -227,17 +243,21 @@ function ProductDetail() {
                 </Typography>
                 <Box sx={{ mt: 3 }}>
                   <Typography variant="body2" color="text.secondary">
-                    This product was created on {new Date(product.createdAt).toLocaleDateString('id-ID', {
+                    This product was created on{' '}
+                    {new Date(product.createdAt).toLocaleDateString('id-ID', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
-                    })} and last updated on {new Date(product.updatedAt).toLocaleDateString('id-ID', {
+                    })}{' '}
+                    and last updated on{' '}
+                    {new Date(product.updatedAt).toLocaleDateString('id-ID', {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric'
-                    })}.
+                    })}
+                    .
                   </Typography>
                 </Box>
               </CardContent>

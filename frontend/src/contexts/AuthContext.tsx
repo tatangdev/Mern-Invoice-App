@@ -1,84 +1,54 @@
-import {
-  createContext,
-  useState,
-  useContext,
-  ReactNode,
-  useEffect
-} from 'react';
+import { createContext, useState, useContext, useEffect } from 'react';
+import { authApi } from 'src/services/api';
+import { STORAGE_KEYS } from 'src/constants';
 
-interface User {
-  id: string;
-  email: string;
-  fullName: string;
-}
+const AuthContext = createContext(undefined);
 
-interface AuthContextType {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  loading: boolean;
-  login: (token: string, user: User) => void;
-  logout: () => void;
-  fetchCurrentUser: () => Promise<void>;
-}
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+  const [token, setToken] = useState(null);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchCurrentUser = async () => {
-    const storedToken = localStorage.getItem('token');
+  async function fetchCurrentUser() {
+    const storedToken = localStorage.getItem(STORAGE_KEYS.TOKEN);
     if (!storedToken) {
       setLoading(false);
       return;
     }
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/auth/me`,
-        {
-          headers: {
-            Authorization: `Bearer ${storedToken}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch user');
-      }
-
-      const data = await response.json();
-      setUser(data.data.user);
+      const response = await authApi.getCurrentUser();
+      setUser(response.data.user);
       setToken(storedToken);
     } catch (error) {
       console.error('Failed to fetch current user:', error);
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER);
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   useEffect(() => {
     fetchCurrentUser();
   }, []);
 
-  const login = (newToken: string, newUser: User) => {
+  function login(newToken, newUser) {
     setToken(newToken);
     setUser(newUser);
-    localStorage.setItem('token', newToken);
-    localStorage.setItem('user', JSON.stringify(newUser));
-  };
+    localStorage.setItem(STORAGE_KEYS.TOKEN, newToken);
+    localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(newUser));
+  }
 
-  const logout = () => {
+  function logout() {
     setToken(null);
     setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-  };
+    localStorage.removeItem(STORAGE_KEYS.TOKEN);
+    localStorage.removeItem(STORAGE_KEYS.USER);
+  }
 
   return (
     <AuthContext.Provider

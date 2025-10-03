@@ -12,7 +12,6 @@ import {
 import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from 'src/contexts/SidebarContext';
 
-import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
 import InventoryTwoToneIcon from '@mui/icons-material/InventoryTwoTone';
 import ReceiptTwoToneIcon from '@mui/icons-material/ReceiptTwoTone';
 
@@ -174,17 +173,6 @@ function SidebarMenu() {
         >
           <SubMenuWrapper>
             <List component="div">
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/management/transactions"
-                  startIcon={<TableChartTwoToneIcon />}
-                >
-                  Transactions List
-                </Button>
-              </ListItem>
               <ListItem component="div">
                 <Button
                   disableRipple
