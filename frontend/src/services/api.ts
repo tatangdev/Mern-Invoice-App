@@ -1,37 +1,28 @@
-// Get API URL from environment variable (.env file)
 const API_URL = process.env.REACT_APP_API_URL;
 
-// Check if API URL is configured
 if (!API_URL) {
   throw new Error('REACT_APP_API_URL environment variable is not defined');
 }
 
-// Helper function to make API requests
 async function fetchApi(endpoint, options) {
-  // Get authentication token from browser storage
   const token = localStorage.getItem('token');
 
-  // Set up request headers
   const headers = {
     'Content-Type': 'application/json',
     ...(options?.headers || {})
   };
 
-  // Add Authorization header if user is logged in
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 
-  // Make the HTTP request to the API
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers
   });
 
-  // Convert response to JSON
   const data = await response.json();
 
-  // Check if request was successful
   if (!response.ok) {
     throw new Error(data.message || 'Request failed');
   }
@@ -39,9 +30,34 @@ async function fetchApi(endpoint, options) {
   return data;
 }
 
-// Authentication API functions
+async function uploadFile(endpoint, file, fieldName) {
+  const token = localStorage.getItem('token');
+
+  const formData = new FormData();
+  formData.append(fieldName, file);
+
+  const headers: Record<string, string> = {};
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    method: 'PATCH',
+    headers,
+    body: formData
+  });
+
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || 'Upload failed');
+  }
+
+  return data;
+}
+
 export const authApi = {
-  // Login user
   login(email, password) {
     return fetchApi('/api/auth/login', {
       method: 'POST',
@@ -49,7 +65,6 @@ export const authApi = {
     });
   },
 
-  // Register new user
   register(email, password, fullName) {
     return fetchApi('/api/auth/register', {
       method: 'POST',
@@ -57,25 +72,28 @@ export const authApi = {
     });
   },
 
-  // Get current logged in user
   getCurrentUser() {
     return fetchApi('/api/auth/me', {});
+  },
+
+  updateProfileImage(file) {
+    return uploadFile('/api/auth/profile-image', file, 'profileImage');
+  },
+
+  updateCoverImage(file) {
+    return uploadFile('/api/auth/cover-image', file, 'coverImage');
   }
 };
 
-// Products API functions
 export const productsApi = {
-  // Get all products
   getAll() {
     return fetchApi('/api/products', {});
   },
 
-  // Get single product by ID
   getById(id) {
     return fetchApi(`/api/products/${id}`, {});
   },
 
-  // Create new product
   create(product) {
     return fetchApi('/api/products', {
       method: 'POST',
@@ -83,7 +101,6 @@ export const productsApi = {
     });
   },
 
-  // Update existing product
   update(id, product) {
     return fetchApi(`/api/products/${id}`, {
       method: 'PUT',
@@ -91,7 +108,10 @@ export const productsApi = {
     });
   },
 
-  // Delete product
+  updateImage(id, file) {
+    return uploadFile(`/api/products/${id}/image`, file, 'image');
+  },
+
   delete(id) {
     return fetchApi(`/api/products/${id}`, {
       method: 'DELETE'
@@ -99,19 +119,15 @@ export const productsApi = {
   }
 };
 
-// Invoices API functions
 export const invoicesApi = {
-  // Get all invoices
   getAll() {
     return fetchApi('/api/invoices', {});
   },
 
-  // Get single invoice by ID
   getById(id) {
     return fetchApi(`/api/invoices/${id}`, {});
   },
 
-  // Create new invoice
   create(invoice) {
     return fetchApi('/api/invoices', {
       method: 'POST',
@@ -119,7 +135,6 @@ export const invoicesApi = {
     });
   },
 
-  // Update existing invoice
   update(id, invoice) {
     return fetchApi(`/api/invoices/${id}`, {
       method: 'PUT',
@@ -127,7 +142,6 @@ export const invoicesApi = {
     });
   },
 
-  // Delete invoice
   delete(id) {
     return fetchApi(`/api/invoices/${id}`, {
       method: 'DELETE'
@@ -135,9 +149,7 @@ export const invoicesApi = {
   }
 };
 
-// Transactions API functions
 export const transactionsApi = {
-  // Get all transactions
   getAll() {
     return fetchApi('/api/transactions', {});
   }

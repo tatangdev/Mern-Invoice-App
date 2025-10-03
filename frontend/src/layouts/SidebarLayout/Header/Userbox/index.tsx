@@ -85,7 +85,7 @@ function HeaderUserbox() {
         <Avatar
           variant="rounded"
           alt={user?.fullName || 'User'}
-          src="/static/images/avatars/1.jpg"
+          src={user?.profileImage || '/static/images/avatars/1.jpg'}
         />
         <Hidden mdDown>
           <UserBoxText>
@@ -118,7 +118,7 @@ function HeaderUserbox() {
           <Avatar
             variant="rounded"
             alt={user?.fullName || 'User'}
-            src="/static/images/avatars/1.jpg"
+            src={user?.profileImage || '/static/images/avatars/1.jpg'}
           />
           <UserBoxText>
             <UserBoxLabel variant="body1">

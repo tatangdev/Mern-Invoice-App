@@ -1,5 +1,3 @@
-// Application route paths
-// Use these constants instead of hardcoding URLs like '/login'
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
@@ -11,15 +9,11 @@ export const ROUTES = {
   PROFILE: '/management/profile'
 };
 
-// Keys used to store data in browser's localStorage
-// Use these to save/retrieve user data and authentication token
 export const STORAGE_KEYS = {
   TOKEN: 'token',
   USER: 'user'
 };
 
-// API endpoint paths (not used directly - see services/api.ts)
-// Kept here for reference and consistency
 export const API_ENDPOINTS = {
   AUTH: {
     LOGIN: '/api/auth/login',

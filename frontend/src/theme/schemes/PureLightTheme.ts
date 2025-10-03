@@ -130,7 +130,6 @@ const colors = {
 };
 
 export const PureLightTheme = createTheme({
-  // direction: i18n.dir(),
   colors: {
     gradients: {
       blue1: colors.gradients.blue1,

@@ -4,6 +4,8 @@ export interface IProduct extends Document {
   name: string;
   desc: string;
   price: number;
+  image?: string;
+  userId: mongoose.Types.ObjectId;
 }
 
 const ProductSchema: Schema = new Schema(
@@ -25,6 +27,16 @@ const ProductSchema: Schema = new Schema(
       required: [true, 'Product price is required'],
       min: [0, 'Price cannot be negative'],
     },
+    image: {
+      type: String,
+      default: null,
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User ID is required'],
+      index: true,
+    },
   },
   {
     timestamps: true,
@@ -33,12 +45,12 @@ const ProductSchema: Schema = new Schema(
   },
 );
 
-// Virtual for id
+ProductSchema.index({ userId: 1, name: 1 }, { unique: true });
+
 ProductSchema.virtual('id').get(function (this: any) {
   return this._id.toHexString();
 });
 
-// Remove _id and __v from JSON output
 ProductSchema.set('toJSON', {
   virtuals: true,
   transform: (_doc, ret: any) => {

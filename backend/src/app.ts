@@ -1,6 +1,8 @@
 import express, { type Express, type Request, type Response } from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config/env.js';
 import logger from './config/logger.js';
 import routes from './routes/index.routes.js';
@@ -25,6 +27,12 @@ app.use(
   }),
 );
 app.use(express.json());
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use(
+  '/images',
+  express.static(path.join(__dirname, '..', 'uploads', 'images')),
+);
 
 app.get('/', (_req: Request, res: Response) => {
   res.json({ message: 'Hello World!' });

@@ -7,12 +7,14 @@ import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import ProductsTable from './ProductsTable';
 import ProductForm from './ProductForm';
 import { useAuth } from 'src/contexts/AuthContext';
+import { productsApi } from 'src/services/api';
 
 interface Product {
   id: string;
   name: string;
   desc: string;
   price: number;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,21 +30,8 @@ function Products() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/products`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
-
-      const data = await response.json();
-      setProducts(data.data);
+      const response = await productsApi.getAll();
+      setProducts(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
@@ -74,45 +63,24 @@ function Products() {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/products/${id}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to delete product');
-      }
-
+      await productsApi.delete(id);
       fetchProducts();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to delete product');
     }
   };
 
-  const handleSubmitProduct = async (product: Product) => {
+  const handleSubmitProduct = async (product: Product, imageFile?: File) => {
     try {
-      const url = product.id
-        ? `${process.env.REACT_APP_API_URL}/api/products/${product.id}`
-        : `${process.env.REACT_APP_API_URL}/api/products`;
+      let productResponse;
+      if (product.id) {
+        productResponse = await productsApi.update(product.id, product);
+      } else {
+        productResponse = await productsApi.create(product);
+      }
 
-      const method = product.id ? 'PUT' : 'POST';
-
-      const response = await fetch(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify(product)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to save product');
+      if (imageFile && productResponse.data.id) {
+        await productsApi.updateImage(productResponse.data.id, imageFile);
       }
 
       setFormOpen(false);

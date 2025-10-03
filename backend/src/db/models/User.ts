@@ -4,6 +4,8 @@ export interface IUser extends Document {
   fullName: string;
   email: string;
   password: string;
+  profileImage?: string;
+  coverImage?: string;
 }
 
 const UserSchema: Schema = new Schema(
@@ -29,6 +31,14 @@ const UserSchema: Schema = new Schema(
       minLength: [6, 'Password must be at least 6 characters'],
       select: false,
     },
+    profileImage: {
+      type: String,
+      default: null,
+    },
+    coverImage: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -37,12 +47,10 @@ const UserSchema: Schema = new Schema(
   },
 );
 
-// Virtual for id
 UserSchema.virtual('id').get(function (this: any) {
   return this._id.toHexString();
 });
 
-// Remove _id and __v from JSON output
 UserSchema.set('toJSON', {
   virtuals: true,
   transform: (_doc, ret: any) => {

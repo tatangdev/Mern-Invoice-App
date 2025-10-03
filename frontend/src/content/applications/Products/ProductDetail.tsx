@@ -12,17 +12,26 @@ import {
   Divider,
   CircularProgress,
   Alert,
-  Chip
+  Chip,
+  IconButton,
+  styled
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone';
 import { useAuth } from 'src/contexts/AuthContext';
+import { productsApi } from 'src/services/api';
+
+const Input = styled('input')({
+  display: 'none'
+});
 
 interface Product {
   id: string;
   name: string;
   desc: string;
   price: number;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -34,36 +43,43 @@ function ProductDetail() {
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
+
+  const fetchProduct = async () => {
+    try {
+      setLoading(true);
+      const response = await productsApi.getById(id!);
+      setProduct(response.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.REACT_APP_API_URL}/api/products/${id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch product');
-        }
-
-        const data = await response.json();
-        setProduct(data.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     if (id) {
       fetchProduct();
     }
-  }, [id, token]);
+  }, [id]);
+
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (!file || !id) return;
+
+    setUploading(true);
+    try {
+      await productsApi.updateImage(id, file);
+      await fetchProduct();
+    } catch (err) {
+      console.error('Error uploading image:', err);
+      alert('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -120,25 +136,67 @@ function ProductDetail() {
                   position: 'relative'
                 }}
               >
+                {product.image ? (
+                  <Box
+                    component="img"
+                    src={product.image}
+                    alt={product.name}
+                    sx={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover'
+                    }}
+                  />
+                ) : (
+                  <Box
+                    sx={{
+                      width: '80%',
+                      height: '80%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      bgcolor: 'white',
+                      borderRadius: 2,
+                      boxShadow: 1
+                    }}
+                  >
+                    <Typography
+                      variant="h1"
+                      color="text.secondary"
+                      sx={{ opacity: 0.3 }}
+                    >
+                      {product.name.charAt(0).toUpperCase()}
+                    </Typography>
+                  </Box>
+                )}
                 <Box
                   sx={{
-                    width: '80%',
-                    height: '80%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bgcolor: 'white',
-                    borderRadius: 2,
-                    boxShadow: 1
+                    position: 'absolute',
+                    bottom: 16,
+                    right: 16
                   }}
                 >
-                  <Typography
-                    variant="h1"
-                    color="text.secondary"
-                    sx={{ opacity: 0.3 }}
-                  >
-                    {product.name.charAt(0).toUpperCase()}
-                  </Typography>
+                  <Input
+                    accept="image/*"
+                    id="product-image-upload"
+                    type="file"
+                    onChange={handleImageUpload}
+                  />
+                  <label htmlFor="product-image-upload">
+                    <IconButton
+                      component="span"
+                      disabled={uploading}
+                      sx={{
+                        bgcolor: 'primary.main',
+                        color: 'white',
+                        '&:hover': {
+                          bgcolor: 'primary.dark'
+                        }
+                      }}
+                    >
+                      <UploadTwoToneIcon />
+                    </IconButton>
+                  </label>
                 </Box>
               </Box>
             </Card>

@@ -115,7 +115,6 @@ export async function createInvoice(
       return;
     }
 
-    // Process items and fetch product details
     const processedItems = [];
     let subtotal = 0;
 
@@ -233,7 +232,6 @@ export async function updateInvoice(
     if (dueDate !== undefined) updateData.dueDate = dueDate;
     if (notes !== undefined) updateData.notes = notes;
 
-    // Process items if provided
     if (items && Array.isArray(items) && items.length > 0) {
       const processedItems = [];
       let subtotal = 0;

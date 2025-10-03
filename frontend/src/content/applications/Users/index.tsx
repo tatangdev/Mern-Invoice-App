@@ -12,8 +12,12 @@ function ManagementUserProfile() {
 
   const user = {
     name: authUser?.fullName || 'User',
-    coverImg: '',
-    avatar: '',
+    fullName: authUser?.fullName || 'User',
+    email: authUser?.email || '',
+    coverImg: authUser?.coverImage || '',
+    coverImage: authUser?.coverImage || '',
+    avatar: authUser?.profileImage || '',
+    profileImage: authUser?.profileImage || '',
     jobtitle: authUser?.email || '',
     joinDate: authUser?.createdAt
       ? format(new Date(authUser.createdAt), 'MMMM yyyy')

@@ -133,16 +133,13 @@ const InvoiceSchema: Schema = new Schema(
   },
 );
 
-// Compound index for user queries
 InvoiceSchema.index({ userId: 1, createdAt: -1 });
 InvoiceSchema.index({ userId: 1, status: 1 });
 
-// Virtual for id
 InvoiceSchema.virtual('id').get(function (this: any) {
   return this._id.toHexString();
 });
 
-// Remove _id and __v from JSON output
 InvoiceSchema.set('toJSON', {
   virtuals: true,
   transform: (_doc, ret: any) => {

@@ -50,6 +50,28 @@ export function AuthProvider({ children }) {
     localStorage.removeItem(STORAGE_KEYS.USER);
   }
 
+  async function updateProfileImage(file) {
+    try {
+      const response = await authApi.updateProfileImage(file);
+      await fetchCurrentUser();
+      return response;
+    } catch (error) {
+      console.error('Failed to update profile image:', error);
+      throw error;
+    }
+  }
+
+  async function updateCoverImage(file) {
+    try {
+      const response = await authApi.updateCoverImage(file);
+      await fetchCurrentUser();
+      return response;
+    } catch (error) {
+      console.error('Failed to update cover image:', error);
+      throw error;
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -59,7 +81,9 @@ export function AuthProvider({ children }) {
         loading,
         login,
         logout,
-        fetchCurrentUser
+        fetchCurrentUser,
+        updateProfileImage,
+        updateCoverImage
       }}
     >
       {children}

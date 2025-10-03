@@ -7,7 +7,17 @@ import BaseLayout from 'src/layouts/BaseLayout';
 
 import SuspenseLoader from 'src/components/SuspenseLoader';
 import ProtectedRoute from 'src/components/ProtectedRoute';
-import DashboardRedirect from 'src/content/applications/Dashboard';
+import { useAuth } from 'src/contexts/AuthContext';
+
+function DashboardRedirect() {
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return <SuspenseLoader />;
+  }
+
+  return <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />;
+}
 
 const Loader = (Component) => (props) =>
   (

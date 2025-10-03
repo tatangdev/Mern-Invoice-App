@@ -14,7 +14,8 @@ import {
   TableContainer,
   Typography,
   useTheme,
-  CardHeader
+  CardHeader,
+  Avatar
 } from '@mui/material';
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
@@ -26,6 +27,7 @@ interface Product {
   name: string;
   desc: string;
   price: number;
+  image?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -66,6 +68,7 @@ const ProductsTable: FC<ProductsTableProps> = ({
         <Table>
           <TableHead>
             <TableRow>
+              <TableCell>Image</TableCell>
               <TableCell>Name</TableCell>
               <TableCell>Description</TableCell>
               <TableCell align="right">Price</TableCell>
@@ -76,6 +79,16 @@ const ProductsTable: FC<ProductsTableProps> = ({
             {paginatedProducts.map((product) => {
               return (
                 <TableRow hover key={product.id}>
+                  <TableCell>
+                    <Avatar
+                      variant="rounded"
+                      src={product.image || ''}
+                      alt={product.name}
+                      sx={{ width: 56, height: 56 }}
+                    >
+                      {product.name.charAt(0).toUpperCase()}
+                    </Avatar>
+                  </TableCell>
                   <TableCell>
                     <Typography
                       variant="body1"

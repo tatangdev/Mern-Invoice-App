@@ -41,6 +41,8 @@ export async function login(req: Request, res: Response): Promise<void> {
 
     logger.info('User logged in', { userId: user._id, email: user.email });
 
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+
     res.status(200).json({
       data: {
         token,
@@ -48,6 +50,10 @@ export async function login(req: Request, res: Response): Promise<void> {
           id: user._id,
           email: user.email,
           fullName: user.fullName,
+          profileImage: user.profileImage
+            ? `${baseUrl}${user.profileImage}`
+            : null,
+          coverImage: user.coverImage ? `${baseUrl}${user.coverImage}` : null,
         },
       },
     });
@@ -98,6 +104,8 @@ export async function register(req: Request, res: Response): Promise<void> {
       email: newUser.email,
     });
 
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+
     res.status(201).json({
       data: {
         token,
@@ -105,6 +113,12 @@ export async function register(req: Request, res: Response): Promise<void> {
           id: newUser._id,
           email: newUser.email,
           fullName: newUser.fullName,
+          profileImage: newUser.profileImage
+            ? `${baseUrl}${newUser.profileImage}`
+            : null,
+          coverImage: newUser.coverImage
+            ? `${baseUrl}${newUser.coverImage}`
+            : null,
         },
       },
     });
@@ -131,12 +145,18 @@ export async function getCurrentUser(
       return;
     }
 
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+
     res.status(200).json({
       data: {
         user: {
           id: user._id,
           email: user.email,
           fullName: user.fullName,
+          profileImage: user.profileImage
+            ? `${baseUrl}${user.profileImage}`
+            : null,
+          coverImage: user.coverImage ? `${baseUrl}${user.coverImage}` : null,
         },
       },
     });
@@ -144,6 +164,102 @@ export async function getCurrentUser(
     logger.error('Get current user error', { error });
     res.status(500).json({
       message: 'Failed to get current user',
+    });
+  }
+}
+
+export async function updateProfileImage(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const userId = req.user?.userId;
+
+    if (!req.file) {
+      res.status(400).json({
+        message: 'No file uploaded',
+      });
+      return;
+    }
+
+    const imageUrl = `/images/${req.file.filename}`;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { profileImage: imageUrl },
+      { new: true },
+    );
+
+    if (!user) {
+      res.status(404).json({
+        message: 'User not found',
+      });
+      return;
+    }
+
+    logger.info('Profile image updated', { userId });
+
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+    res.status(200).json({
+      data: {
+        profileImage: user.profileImage
+          ? `${baseUrl}${user.profileImage}`
+          : null,
+      },
+    });
+  } catch (error) {
+    logger.error('Update profile image error', { error });
+    res.status(500).json({
+      message: 'Failed to update profile image',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+export async function updateCoverImage(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const userId = req.user?.userId;
+
+    if (!req.file) {
+      res.status(400).json({
+        message: 'No file uploaded',
+      });
+      return;
+    }
+
+    const imageUrl = `/images/${req.file.filename}`;
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      { coverImage: imageUrl },
+      { new: true },
+    );
+
+    if (!user) {
+      res.status(404).json({
+        message: 'User not found',
+      });
+      return;
+    }
+
+    logger.info('Cover image updated', { userId });
+
+    const baseUrl = `${req.protocol}://${req.get('host')}`;
+
+    res.status(200).json({
+      data: {
+        coverImage: user.coverImage ? `${baseUrl}${user.coverImage}` : null,
+      },
+    });
+  } catch (error) {
+    logger.error('Update cover image error', { error });
+    res.status(500).json({
+      message: 'Failed to update cover image',
+      error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 }
