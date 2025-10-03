@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import logger from '../config/logger.js';
 import Invoice from '../db/models/Invoice.js';
 import Product from '../db/models/Product.js';
@@ -47,7 +47,7 @@ export async function getInvoiceById(
       return;
     }
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid invoice ID',
       });
@@ -204,7 +204,7 @@ export async function updateInvoice(
       return;
     }
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid invoice ID',
       });
@@ -327,7 +327,7 @@ export async function deleteInvoice(
       return;
     }
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid invoice ID',
       });

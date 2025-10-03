@@ -1,11 +1,14 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 
-export interface IProduct extends Document {
+export interface IProduct {
+  _id: Types.ObjectId;
   name: string;
   desc: string;
   price: number;
   image?: string;
-  userId: mongoose.Types.ObjectId;
+  userId: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const ProductSchema: Schema = new Schema(
@@ -40,7 +43,14 @@ const ProductSchema: Schema = new Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: any) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
     toObject: { virtuals: true },
   },
 );
@@ -49,15 +59,6 @@ ProductSchema.index({ userId: 1, name: 1 }, { unique: true });
 
 ProductSchema.virtual('id').get(function (this: any) {
   return this._id.toHexString();
-});
-
-ProductSchema.set('toJSON', {
-  virtuals: true,
-  transform: (_doc, ret: any) => {
-    delete ret._id;
-    delete ret.__v;
-    return ret;
-  },
 });
 
 export default mongoose.model<IProduct>('Product', ProductSchema);

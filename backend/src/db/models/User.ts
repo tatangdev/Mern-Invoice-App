@@ -1,11 +1,14 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 
-export interface IUser extends Document {
+export interface IUser {
+  _id: Types.ObjectId;
   fullName: string;
   email: string;
   password: string;
   profileImage?: string;
   coverImage?: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const UserSchema: Schema = new Schema(
@@ -42,22 +45,20 @@ const UserSchema: Schema = new Schema(
   },
   {
     timestamps: true,
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: any) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
     toObject: { virtuals: true },
   },
 );
 
 UserSchema.virtual('id').get(function (this: any) {
   return this._id.toHexString();
-});
-
-UserSchema.set('toJSON', {
-  virtuals: true,
-  transform: (_doc, ret: any) => {
-    delete ret._id;
-    delete ret.__v;
-    return ret;
-  },
 });
 
 export default mongoose.model<IUser>('User', UserSchema);

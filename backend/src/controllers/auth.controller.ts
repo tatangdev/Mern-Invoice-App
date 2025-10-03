@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express';
 import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import { generateToken } from '../utils/jwt.js';
 import logger from '../config/logger.js';
 import User from '../db/models/User.js';
@@ -35,7 +35,7 @@ export async function login(req: Request, res: Response): Promise<void> {
     }
 
     const token = generateToken({
-      userId: (user._id as mongoose.Types.ObjectId).toString(),
+      userId: (user._id as Types.ObjectId).toString(),
       email: user.email,
     });
 
@@ -95,7 +95,7 @@ export async function register(req: Request, res: Response): Promise<void> {
     });
 
     const token = generateToken({
-      userId: (newUser._id as mongoose.Types.ObjectId).toString(),
+      userId: (newUser._id as Types.ObjectId).toString(),
       email: newUser.email,
     });
 

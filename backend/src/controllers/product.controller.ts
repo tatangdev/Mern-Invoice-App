@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express';
-import mongoose from 'mongoose';
+import { Types } from 'mongoose';
 import logger from '../config/logger.js';
 import Product from '../db/models/Product.js';
 
@@ -39,7 +39,7 @@ export async function getProductById(
     const { id } = req.params;
     const userId = req.user?.userId;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid product ID',
       });
@@ -132,7 +132,7 @@ export async function updateProduct(
     const { name, desc, price } = req.body;
     const userId = req.user?.userId;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid product ID',
       });
@@ -194,7 +194,7 @@ export async function updateProductImage(
   try {
     const { id } = req.params;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid product ID',
       });
@@ -250,7 +250,7 @@ export async function deleteProduct(
     const { id } = req.params;
     const userId = req.user?.userId;
 
-    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+    if (!id || !Types.ObjectId.isValid(id)) {
       res.status(400).json({
         message: 'Invalid product ID',
       });

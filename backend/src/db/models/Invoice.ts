@@ -1,17 +1,20 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, { Schema, Document, Types } from 'mongoose';
 
 export interface IInvoiceItem {
-  product: mongoose.Types.ObjectId;
+  _id: Types.ObjectId;
+  product: Types.ObjectId;
   productName: string;
   productDesc: string;
   price: number;
   qty: number;
   total: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IInvoice extends Document {
-  _id: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
+  _id: Types.ObjectId;
+  userId: Types.ObjectId;
   recipient: string;
   number: string;
   items: IInvoiceItem[];
@@ -130,6 +133,15 @@ const InvoiceSchema: Schema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret: any) => {
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
+    toObject: { virtuals: true },
   },
 );
 
@@ -138,15 +150,6 @@ InvoiceSchema.index({ userId: 1, status: 1 });
 
 InvoiceSchema.virtual('id').get(function (this: any) {
   return this._id.toHexString();
-});
-
-InvoiceSchema.set('toJSON', {
-  virtuals: true,
-  transform: (_doc, ret: any) => {
-    delete ret._id;
-    delete ret.__v;
-    return ret;
-  },
 });
 
 export default mongoose.model<IInvoice>('Invoice', InvoiceSchema);
