@@ -14,34 +14,41 @@ import {
   TableContainer,
   Typography,
   useTheme,
-  CardHeader
+  CardHeader,
+  Chip
 } from '@mui/material';
 
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import VisibilityTwoToneIcon from '@mui/icons-material/VisibilityTwoTone';
+import { format } from 'date-fns';
+import { Invoice } from './types';
 
-interface Product {
-  id: string;
-  name: string;
-  desc: string;
-  price: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface ProductsTableProps {
-  products: Product[];
-  onEdit: (product: Product) => void;
+interface InvoicesTableProps {
+  invoices: Invoice[];
+  onEdit: (invoice: Invoice) => void;
   onDelete: (id: string) => void;
-  onView: (id: string) => void;
+  onPreview: (invoice: Invoice) => void;
 }
 
-const ProductsTable: FC<ProductsTableProps> = ({
-  products = [],
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'paid':
+      return 'success';
+    case 'sent':
+      return 'info';
+    case 'cancelled':
+      return 'error';
+    default:
+      return 'default';
+  }
+};
+
+const InvoicesTable: FC<InvoicesTableProps> = ({
+  invoices = [],
   onEdit,
   onDelete,
-  onView
+  onPreview
 }) => {
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(10);
@@ -56,26 +63,28 @@ const ProductsTable: FC<ProductsTableProps> = ({
     setLimit(parseInt(event.target.value));
   };
 
-  const paginatedProducts = products.slice(page * limit, page * limit + limit);
+  const paginatedInvoices = invoices.slice(page * limit, page * limit + limit);
 
   return (
     <Card>
-      <CardHeader title="Products" />
+      <CardHeader title="Invoices" />
       <Divider />
       <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell align="right">Price</TableCell>
+              <TableCell>Invoice Number</TableCell>
+              <TableCell>Recipient</TableCell>
+              <TableCell>Issue Date</TableCell>
+              <TableCell align="right">Total</TableCell>
+              <TableCell>Status</TableCell>
               <TableCell align="right">Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedProducts.map((product) => {
+            {paginatedInvoices.map((invoice) => {
               return (
-                <TableRow hover key={product.id}>
+                <TableRow hover key={invoice.id || invoice.number}>
                   <TableCell>
                     <Typography
                       variant="body1"
@@ -84,12 +93,17 @@ const ProductsTable: FC<ProductsTableProps> = ({
                       gutterBottom
                       noWrap
                     >
-                      {product.name}
+                      {invoice.number}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      {product.desc}
+                      {invoice.recipient}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {invoice.issueDate ? format(new Date(invoice.issueDate), 'MMM dd, yyyy') : 'N/A'}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
@@ -100,11 +114,18 @@ const ProductsTable: FC<ProductsTableProps> = ({
                       gutterBottom
                       noWrap
                     >
-                      Rp {product.price.toLocaleString('id-ID')}
+                      Rp {(invoice.total || 0).toLocaleString('id-ID')}
                     </Typography>
                   </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={invoice.status.toUpperCase()}
+                      color={getStatusColor(invoice.status)}
+                      size="small"
+                    />
+                  </TableCell>
                   <TableCell align="right">
-                    <Tooltip title="View Product" arrow>
+                    <Tooltip title="Preview Invoice" arrow>
                       <IconButton
                         sx={{
                           '&:hover': {
@@ -114,12 +135,12 @@ const ProductsTable: FC<ProductsTableProps> = ({
                         }}
                         color="inherit"
                         size="small"
-                        onClick={() => onView(product.id)}
+                        onClick={() => onPreview(invoice)}
                       >
                         <VisibilityTwoToneIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Edit Product" arrow>
+                    <Tooltip title="Edit Invoice" arrow>
                       <IconButton
                         sx={{
                           '&:hover': {
@@ -129,12 +150,12 @@ const ProductsTable: FC<ProductsTableProps> = ({
                         }}
                         color="inherit"
                         size="small"
-                        onClick={() => onEdit(product)}
+                        onClick={() => onEdit(invoice)}
                       >
                         <EditTwoToneIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Delete Product" arrow>
+                    <Tooltip title="Delete Invoice" arrow>
                       <IconButton
                         sx={{
                           '&:hover': { background: theme.colors.error.lighter },
@@ -142,7 +163,7 @@ const ProductsTable: FC<ProductsTableProps> = ({
                         }}
                         color="inherit"
                         size="small"
-                        onClick={() => onDelete(product.id)}
+                        onClick={() => onDelete(invoice.id || '')}
                       >
                         <DeleteTwoToneIcon fontSize="small" />
                       </IconButton>
@@ -157,7 +178,7 @@ const ProductsTable: FC<ProductsTableProps> = ({
       <Box p={2}>
         <TablePagination
           component="div"
-          count={products.length}
+          count={invoices.length}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleLimitChange}
           page={page}
@@ -169,4 +190,4 @@ const ProductsTable: FC<ProductsTableProps> = ({
   );
 };
 
-export default ProductsTable;
+export default InvoicesTable;

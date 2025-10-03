@@ -1,30 +1,47 @@
 import { Helmet } from 'react-helmet-async';
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Container, Grid, Button, Box, Typography, Alert } from '@mui/material';
 import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 
-import ProductsTable from './ProductsTable';
-import ProductForm from './ProductForm';
+import InvoicesTable from './InvoicesTable';
+import InvoiceForm from './InvoiceForm';
+import InvoicePreview from './InvoicePreview';
 import { useAuth } from 'src/contexts/AuthContext';
+import { Product, Invoice } from './types';
 
-interface Product {
-  id: string;
-  name: string;
-  desc: string;
-  price: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-function Products() {
+function Invoices() {
   const { token } = useAuth();
-  const navigate = useNavigate();
+  const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [formOpen, setFormOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
+
+  const fetchInvoices = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/api/invoices`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch invoices');
+      }
+
+      const data = await response.json();
+      setInvoices(data.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -44,38 +61,38 @@ function Products() {
       const data = await response.json();
       setProducts(data.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
+      console.error('Failed to fetch products:', err);
     }
   };
 
   useEffect(() => {
+    fetchInvoices();
     fetchProducts();
   }, []);
 
-  const handleAddProduct = () => {
-    setSelectedProduct(null);
+  const handleAddInvoice = () => {
+    setSelectedInvoice(null);
     setFormOpen(true);
   };
 
-  const handleEditProduct = (product: Product) => {
-    setSelectedProduct(product);
+  const handleEditInvoice = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
     setFormOpen(true);
   };
 
-  const handleViewProduct = (id: string) => {
-    navigate(`/management/products/${id}`);
+  const handlePreviewInvoice = (invoice: Invoice) => {
+    setSelectedInvoice(invoice);
+    setPreviewOpen(true);
   };
 
-  const handleDeleteProduct = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) {
+  const handleDeleteInvoice = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this invoice?')) {
       return;
     }
 
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_API_URL}/api/products/${id}`,
+        `${process.env.REACT_APP_API_URL}/api/invoices/${id}`,
         {
           method: 'DELETE',
           headers: {
@@ -85,22 +102,22 @@ function Products() {
       );
 
       if (!response.ok) {
-        throw new Error('Failed to delete product');
+        throw new Error('Failed to delete invoice');
       }
 
-      fetchProducts();
+      fetchInvoices();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete product');
+      setError(err instanceof Error ? err.message : 'Failed to delete invoice');
     }
   };
 
-  const handleSubmitProduct = async (product: Product) => {
+  const handleSubmitInvoice = async (invoice: any) => {
     try {
-      const url = product.id
-        ? `${process.env.REACT_APP_API_URL}/api/products/${product.id}`
-        : `${process.env.REACT_APP_API_URL}/api/products`;
+      const url = invoice.id
+        ? `${process.env.REACT_APP_API_URL}/api/invoices/${invoice.id}`
+        : `${process.env.REACT_APP_API_URL}/api/invoices`;
 
-      const method = product.id ? 'PUT' : 'POST';
+      const method = invoice.id ? 'PUT' : 'POST';
 
       const response = await fetch(url, {
         method,
@@ -108,24 +125,24 @@ function Products() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(product)
+        body: JSON.stringify(invoice)
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save product');
+        throw new Error('Failed to save invoice');
       }
 
       setFormOpen(false);
-      fetchProducts();
+      fetchInvoices();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save product');
+      setError(err instanceof Error ? err.message : 'Failed to save invoice');
     }
   };
 
   return (
     <>
       <Helmet>
-        <title>Products</title>
+        <title>Invoices</title>
       </Helmet>
       <Container maxWidth="lg" sx={{ mt: 4 }}>
         <Grid
@@ -144,18 +161,18 @@ function Products() {
             >
               <Box>
                 <Typography variant="h3" component="h3" gutterBottom>
-                  Products
+                  Invoices
                 </Typography>
                 <Typography variant="subtitle2">
-                  Manage your products inventory
+                  Manage your invoices
                 </Typography>
               </Box>
               <Button
                 variant="contained"
                 startIcon={<AddTwoToneIcon />}
-                onClick={handleAddProduct}
+                onClick={handleAddInvoice}
               >
-                Add Product
+                Create Invoice
               </Button>
             </Box>
           </Grid>
@@ -168,25 +185,32 @@ function Products() {
           )}
           <Grid item xs={12}>
             {!loading && (
-              <ProductsTable
-                products={products}
-                onEdit={handleEditProduct}
-                onDelete={handleDeleteProduct}
-                onView={handleViewProduct}
+              <InvoicesTable
+                invoices={invoices}
+                onEdit={handleEditInvoice}
+                onDelete={handleDeleteInvoice}
+                onPreview={handlePreviewInvoice}
               />
             )}
           </Grid>
         </Grid>
       </Container>
 
-      <ProductForm
+      <InvoiceForm
         open={formOpen}
         onClose={() => setFormOpen(false)}
-        onSubmit={handleSubmitProduct}
-        product={selectedProduct}
+        onSubmit={handleSubmitInvoice}
+        invoice={selectedInvoice}
+        products={products}
+      />
+
+      <InvoicePreview
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        invoice={selectedInvoice}
       />
     </>
   );
 }
 
-export default Products;
+export default Invoices;

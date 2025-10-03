@@ -45,6 +45,12 @@ const UserSettings = Loader(
 const Products = Loader(
   lazy(() => import('src/content/applications/Products'))
 );
+const ProductDetail = Loader(
+  lazy(() => import('src/content/applications/Products/ProductDetail'))
+);
+const Invoices = Loader(
+  lazy(() => import('src/content/applications/Invoices'))
+);
 
 // Components
 
@@ -178,6 +184,14 @@ const routes: RouteObject[] = [
       {
         path: 'products',
         element: <Products />
+      },
+      {
+        path: 'products/:id',
+        element: <ProductDetail />
+      },
+      {
+        path: 'invoices',
+        element: <Invoices />
       },
       {
         path: 'profile',
